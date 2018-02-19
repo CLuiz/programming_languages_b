@@ -48,4 +48,4 @@
     (lambda () (zip xs ys))))
 
 (define (vector-assoc v vec)
-  
+  vec)
