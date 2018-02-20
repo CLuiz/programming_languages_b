@@ -40,12 +40,18 @@
   (lambda () (cons (cons 0 (car (s))) (stream-add-zero (cdr (s))))))
 
 (define (cycle-lists xs ys)
-  (letrec ([zip (lambda (x1 y1)
-                  (cons (cons (car x1) (car y1))
-                        (lambda () (zip
-                                    (if (null? (cdr x1)) xs (cdr x1))
-                                    (if (null? (cddr y1)) ys (cdr y1))))))])
-    (lambda () (zip xs ys))))
+  (letrec ([helper (lambda (x1 y1)
+                     (cons (cons (car x1) (car y1))
+                           (lambda () (helper
+                                       (if (null? (cdr x1)) xs (cdr x1))
+                                       (if (null? (cdr y1)) ys (cdr y1))))))])
+    (lambda () (helper xs ys))))
 
 (define (vector-assoc v vec)
-  vec)
+  (letrec ([search (lambda (index)
+                     (cond [(>= index (vector-length vec)) #f]
+                           [(and (pair? (vector-ref vec index))
+                                 (equal? v (car (vector-ref vec index))))
+                            (vector-ref vec index)]
+                           [#t (search (+ 1 index))]))])
+    (search 0)))
